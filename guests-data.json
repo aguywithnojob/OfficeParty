@@ -1,0 +1,86 @@
+[
+  {
+    "id": 1,
+    "name": "Prajwal Dev",
+    "foodOption": "Non-Veg",
+    "drink": "Drinker",
+    "accepted": false
+  },
+  {
+    "id": 2,
+    "name": "Gautam Rishi",
+    "foodOption": "Non-Veg",
+    "drink": "Drinker",
+    "accepted": false
+  },
+  {
+    "id": 3,
+    "name": "Prateek Garg",
+    "foodOption": "Veg",
+    "drink": "Non Drinker",
+    "accepted": true
+  },
+  {
+    "id": 4,
+    "name": "Tushar Saxena",
+    "foodOption": "Veg",
+    "drink": "Drinker",
+    "accepted": true
+  },
+  {
+    "id": 5,
+    "name": "Gaurav Ahuja",
+    "foodOption": "Non-Veg",
+    "drink": "Drinker",
+    "accepted": false
+  },
+  {
+    "id": 6,
+    "name": "Shivya Shukla",
+    "foodOption": "Veg",
+    "drink": "Drinker",
+    "accepted": false
+  },
+  {
+    "id": 7,
+    "name": "Ankit Grover",
+    "foodOption": "Veg",
+    "drink": "Drinker",
+    "accepted": false
+  },
+  {
+    "id": 8,
+    "name": "Shokin Ajiv",
+    "foodOption": "Veg",
+    "drink": "Drinker",
+    "accepted": false
+  },
+  {
+    "id": 9,
+    "name": "Mohit Kumar",
+    "foodOption": "Veg",
+    "drink": "Drinker",
+    "accepted": false
+  },
+  {
+    "id": 10,
+    "name": "Mohit Mahendru",
+    "foodOption": "Veg",
+    "drink": "Non Drinker",
+    "accepted": false
+  },
+  {
+    "id": 11,
+    "name": "Gajendar Sharma",
+    "foodOption": "Veg",
+    "drink": "Non Drinker",
+    "accepted": false
+  },
+  {
+    "id": 12,
+    "name": "Abhishek Rana",
+    "foodOption": "Veg",
+    "drink": "Non Drinker",
+    "accepted": false
+  }
+]
