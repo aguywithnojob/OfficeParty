@@ -1,6 +1,11 @@
-// Automatically detect if accessing via localhost or IP
+// Automatically detect API base URL
 const getApiBaseUrl = () => {
   const hostname = window.location.hostname;
+  
+  // In production (Render), API is on same server
+  if (hostname.includes('onrender.com')) {
+    return window.location.origin;
+  }
   
   // If accessing via localhost, use localhost for API
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
@@ -8,7 +13,7 @@ const getApiBaseUrl = () => {
   }
   
   // Otherwise use the IP address (for network access)
-  return `http://${hostname.replace('3007', '3008')}:3008`;
+  return `http://${hostname}:3008`;
 };
 
 export const API_BASE_URL = getApiBaseUrl();

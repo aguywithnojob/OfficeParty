@@ -164,7 +164,21 @@ app.put('/api/party-details', (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-  console.log(`Also accessible on your network at http://10.196.13.227:${PORT}`);
+// Serve static files from dist folder in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'dist')));
+  
+  // Serve index.html for all non-API routes (must be after API routes)
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+  });
+}
+
+const PORT_TO_USE = process.env.PORT || PORT;
+
+app.listen(PORT_TO_USE, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT_TO_USE}`);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`Also accessible on your network at http://10.196.13.227:${PORT_TO_USE}`);
+  }
 });
