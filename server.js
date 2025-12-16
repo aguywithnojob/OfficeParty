@@ -1,7 +1,10 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const cors = require('cors');
+const { initializeFirebase, db } = require('./firebase');
+
+// Initialize Firebase
+initializeFirebase();
 
 const app = express();
 const PORT = 3008;
@@ -9,46 +12,58 @@ const PORT = 3008;
 app.use(cors());
 app.use(express.json());
 
-const DATA_FILE = path.join(__dirname, 'guests-data.json');
-const PARTY_DETAILS_FILE = path.join(__dirname, 'party-details.json');
-
 // Admin credentials (in production, use environment variables and hashed passwords)
 const ADMIN_USERNAME = 'admin';
 const ADMIN_PASSWORD = 'nadia';
 
-// Initialize data file if it doesn't exist
-if (!fs.existsSync(DATA_FILE)) {
-  const initialData = [
-    { id: 1, name: 'Prajwal Dev', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-    { id: 2, name: 'Gautam Rishi', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-    { id: 3, name: 'Prateek Garg', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-    { id: 4, name: 'Tushar Saxena', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-    { id: 5, name: 'Gaurav Ahuja', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-    { id: 6, name: 'Shivya Shukla', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-    { id: 7, name: 'Ankit Grover', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-    { id: 8, name: 'Shokin Ajiv', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-    { id: 9, name: 'Mohit Kumar', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-    { id: 10, name: 'Mohit Mhendru', foodOption: 'Veg', drink: 'Non Drinker', accepted: false },
-    { id: 11, name: 'Gajendar Sharma', foodOption: 'Veg', drink: 'Non Drinker', accepted: false },
-  ];
-  fs.writeFileSync(DATA_FILE, JSON.stringify(initialData, null, 2));
-}
+// Initialize Firebase data if needed
+const initializeData = async () => {
+  try {
+    const guestsRef = db().ref('guests');
+    const guestsSnapshot = await guestsRef.once('value');
+    
+    if (!guestsSnapshot.exists()) {
+      const initialData = [
+        { id: 1, name: 'Prajwal Dev', foodOption: 'Non-Veg', drink: 'Drinker', accepted: false },
+        { id: 2, name: 'Gautam Rishi', foodOption: 'Non-Veg', drink: 'Drinker', accepted: false },
+        { id: 3, name: 'Prateek Garg', foodOption: 'Veg', drink: 'Drinker', accepted: false },
+        { id: 4, name: 'Tushar Saxena', foodOption: 'Veg', drink: 'Drinker', accepted: false },
+        { id: 5, name: 'Gaurav Ahuja', foodOption: 'Non-Veg', drink: 'Drinker', accepted: false },
+        { id: 6, name: 'Shivya Shukla', foodOption: 'Veg', drink: 'Drinker', accepted: false },
+        { id: 7, name: 'Ankit Grover', foodOption: 'Veg', drink: 'Drinker', accepted: false },
+        { id: 8, name: 'Shokin Ajiv', foodOption: 'Veg', drink: 'Drinker', accepted: false },
+        { id: 9, name: 'Mohit Kumar', foodOption: 'Veg', drink: 'Drinker', accepted: false },
+        { id: 10, name: 'Mohit Mahendru', foodOption: 'Veg', drink: 'Non Drinker', accepted: false },
+        { id: 11, name: 'Gajendar Sharma', foodOption: 'Veg', drink: 'Non Drinker', accepted: false },
+      ];
+      await guestsRef.set(initialData);
+      console.log('Initialized guest data in Firebase');
+    }
+    
+    const partyRef = db().ref('partyDetails');
+    const partySnapshot = await partyRef.once('value');
+    
+    if (!partySnapshot.exists()) {
+      const initialPartyDetails = {
+        venue: 'TBD',
+        date: '2025-12-17',
+        startTime: '16:00',
+        endTime: '23:00',
+        timing: '4:00 PM - 11:00 PM',
+        totalBill: '',
+        paidBy: '',
+        paymentMobile: '',
+        paymentUPI: ''
+      };
+      await partyRef.set(initialPartyDetails);
+      console.log('Initialized party details in Firebase');
+    }
+  } catch (error) {
+    console.error('Error initializing data:', error);
+  }
+};
 
-// Initialize party details file if it doesn't exist
-if (!fs.existsSync(PARTY_DETAILS_FILE)) {
-  const initialPartyDetails = {
-    venue: 'TBD',
-    date: '2025-12-17',
-    startTime: '16:00',
-    endTime: '23:00',
-    timing: '4:00 PM - 11:00 PM',
-    totalBill: '',
-    paidBy: '',
-    paymentMobile: '',
-    paymentUPI: ''
-  };
-  fs.writeFileSync(PARTY_DETAILS_FILE, JSON.stringify(initialPartyDetails, null, 2));
-}
+initializeData();
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -60,48 +75,52 @@ app.get('/api/health', (req, res) => {
 });
 
 // GET all guests
-app.get('/api/guests', (req, res) => {
+app.get('/api/guests', async (req, res) => {
   try {
-    const data = fs.readFileSync(DATA_FILE, 'utf8');
-    res.json(JSON.parse(data));
+    const snapshot = await db().ref('guests').once('value');
+    const guests = snapshot.val() || [];
+    res.json(guests);
   } catch (error) {
+    console.error('Error fetching guests:', error);
     res.status(500).json({ error: 'Failed to read data' });
   }
 });
 
 // UPDATE guests
-app.post('/api/guests', (req, res) => {
+app.post('/api/guests', async (req, res) => {
   try {
     const guests = req.body;
-    fs.writeFileSync(DATA_FILE, JSON.stringify(guests, null, 2));
+    await db().ref('guests').set(guests);
     res.json({ success: true, guests });
   } catch (error) {
+    console.error('Error saving guests:', error);
     res.status(500).json({ error: 'Failed to save data' });
   }
 });
 
 // UPDATE single guest
-app.put('/api/guests/:id', (req, res) => {
+app.put('/api/guests/:id', async (req, res) => {
   try {
     const guestId = parseInt(req.params.id);
     const updatedGuest = req.body;
     
-    const data = fs.readFileSync(DATA_FILE, 'utf8');
-    let guests = JSON.parse(data);
+    const snapshot = await db().ref('guests').once('value');
+    let guests = snapshot.val() || [];
     
     guests = guests.map(guest => 
       guest.id === guestId ? { ...guest, ...updatedGuest } : guest
     );
     
-    fs.writeFileSync(DATA_FILE, JSON.stringify(guests, null, 2));
+    await db().ref('guests').set(guests);
     res.json({ success: true, guests });
   } catch (error) {
+    console.error('Error updating guest:', error);
     res.status(500).json({ error: 'Failed to update guest' });
   }
 });
 
 // ADD new guest
-app.post('/api/guests/add', (req, res) => {
+app.post('/api/guests/add', async (req, res) => {
   try {
     const { name, foodOption, drink } = req.body;
     
@@ -109,8 +128,8 @@ app.post('/api/guests/add', (req, res) => {
       return res.status(400).json({ error: 'Name is required' });
     }
     
-    const data = fs.readFileSync(DATA_FILE, 'utf8');
-    let guests = JSON.parse(data);
+    const snapshot = await db().ref('guests').once('value');
+    let guests = snapshot.val() || [];
     
     const newGuest = {
       id: guests.length > 0 ? Math.max(...guests.map(g => g.id)) + 1 : 1,
@@ -121,9 +140,10 @@ app.post('/api/guests/add', (req, res) => {
     };
     
     guests.push(newGuest);
-    fs.writeFileSync(DATA_FILE, JSON.stringify(guests, null, 2));
+    await db().ref('guests').set(guests);
     res.json({ success: true, newGuest });
   } catch (error) {
+    console.error('Error adding guest:', error);
     res.status(500).json({ error: 'Failed to add guest' });
   }
 });
@@ -144,22 +164,25 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 // Get party details
-app.get('/api/party-details', (req, res) => {
+app.get('/api/party-details', async (req, res) => {
   try {
-    const data = fs.readFileSync(PARTY_DETAILS_FILE, 'utf8');
-    res.json(JSON.parse(data));
+    const snapshot = await db().ref('partyDetails').once('value');
+    const partyDetails = snapshot.val() || {};
+    res.json(partyDetails);
   } catch (error) {
+    console.error('Error fetching party details:', error);
     res.status(500).json({ error: 'Failed to read party details' });
   }
 });
 
 // Update party details
-app.put('/api/party-details', (req, res) => {
+app.put('/api/party-details', async (req, res) => {
   try {
     const partyDetails = req.body;
-    fs.writeFileSync(PARTY_DETAILS_FILE, JSON.stringify(partyDetails, null, 2));
+    await db().ref('partyDetails').set(partyDetails);
     res.json({ success: true, partyDetails });
   } catch (error) {
+    console.error('Error updating party details:', error);
     res.status(500).json({ error: 'Failed to update party details' });
   }
 });

@@ -1,4 +1,7 @@
 node_modules/
 dist/
+firebase-service-account.json
+guests-data.json
+party-details.json
 .DS_Store
 *.log
