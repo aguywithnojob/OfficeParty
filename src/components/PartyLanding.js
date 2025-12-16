@@ -270,9 +270,10 @@ const PartyLanding = () => {
             <button onClick={exportToCSV} className="export-btn csv-btn">
               📊 Export CSV
             </button>
-            {/* <button onClick={exportToTXT} className="export-btn txt-btn">
-              📄 Export TXT
-            </button> */}
+
+            <a href="/payment" className="payment-link-btn">💳 View Payment Details</a>
+
+          {/* <a href="/guest/add" className="add-guest-link-btn">➕ Add New Guest</a> */}
           </div>
         </div>
         <div className="table-container">
@@ -330,11 +331,7 @@ const PartyLanding = () => {
           </table>
         </div>
 
-        {/* Navigation Links */}
-        <div className="navigation-section">
-          <a href="/payment" className="payment-link-btn">💳 View Payment Details</a>
-          <a href="/guest/add" className="add-guest-link-btn">➕ Add New Guest</a>
-        </div>
+       
 
         {/* Footer */}
         <footer className="party-footer">
