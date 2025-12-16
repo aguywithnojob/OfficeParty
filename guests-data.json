@@ -18,7 +18,7 @@
     "name": "Prateek Garg",
     "foodOption": "Veg",
     "drink": "Non Drinker",
-    "accepted": true
+    "accepted": false
   },
   {
     "id": 4,

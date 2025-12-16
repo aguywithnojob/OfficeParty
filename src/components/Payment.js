@@ -65,14 +65,14 @@ const Payment = () => {
         ) : (
           <>
             {/* Bill Configuration */}
-            <div className="bill-config">
+            {/* <div className="bill-config">
               <h2>Configure Total Bill</h2>
               {partyDetails.paidBy && (
               <div className="paid-by-info">
                 <strong>💳 Paid By:</strong> {partyDetails.paidBy}
               </div>
             )}
-            </div>
+            </div> */}
 
             {/* Summary Cards */}
             <div className="payment-summary">
