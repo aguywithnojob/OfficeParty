@@ -43,8 +43,8 @@ const PartyLanding = () => {
         { id: 7, name: 'Ankit Grover', foodOption: 'Veg', drink: 'Drinker', accepted: false },
         { id: 8, name: 'Shokin Ajiv', foodOption: 'Veg', drink: 'Drinker', accepted: false },
         { id: 9, name: 'Mohit Kumar', foodOption: 'Veg', drink: 'Drinker', accepted: false },
-        { id: 10, name: 'Mohit Mhendru', foodOption: 'Veg', drink: 'Non Drinker', accepted: false },
-        { id: 11, name: 'Gajendar Sharma', foodOption: 'Veg', drink: 'Non Drinker', accepted: false },
+        { id: 10, name: 'Mohit Mahendru', foodOption: 'Veg', drink: 'Non Drinker', accepted: false },
+        { id: 11, name: 'Gajender Sharma', foodOption: 'Veg', drink: 'Non Drinker', accepted: false },
       ]);
       setLoading(false);
     }
@@ -86,7 +86,7 @@ const PartyLanding = () => {
 
   const updateGuestsOnServer = async (updatedGuests) => {
     try {
-      await fetch(API_URL, {
+      await fetch(`${API_BASE_URL}/api/guests`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -114,6 +114,45 @@ const PartyLanding = () => {
     updateGuestsOnServer(updatedGuests);
   };
 
+  const triggerCelebration = () => {
+    // Play celebration sound
+    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGJ0fPTgjMGHm7A7+OZUQ0MUKjn8bdfGwU/jtfyyHUrBSh+zPDajT4JFmm98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGwU8j9Xy0H0vBSqCy/HZiTwIGGy98OuhWBELTqXm77RiGw==');
+    audio.volume = 0.3;
+    audio.play().catch(e => console.log('Audio play failed:', e));
+
+    // Create confetti animation
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ffa500', '#ff1493'];
+    const confettiCount = 100;
+    
+    for (let i = 0; i < confettiCount; i++) {
+      setTimeout(() => {
+        const confetti = document.createElement('div');
+        confetti.className = 'celebration-confetti';
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+        document.body.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 4000);
+      }, i * 20);
+    }
+
+    // Create sparkles
+    for (let i = 0; i < 50; i++) {
+      setTimeout(() => {
+        const sparkle = document.createElement('div');
+        sparkle.className = 'celebration-sparkle';
+        sparkle.style.left = Math.random() * 100 + '%';
+        sparkle.style.top = Math.random() * 100 + '%';
+        sparkle.style.animationDelay = Math.random() * 0.3 + 's';
+        document.body.appendChild(sparkle);
+        
+        setTimeout(() => sparkle.remove(), 2000);
+      }, i * 30);
+    }
+  };
+
   const handleAccept = (id) => {
     if (userAcceptedId !== null) {
       alert('You have already accepted an invitation!');
@@ -127,6 +166,9 @@ const PartyLanding = () => {
     updateGuestsOnServer(updatedGuests);
     setUserAcceptedId(id);
     localStorage.setItem('userAcceptedId', id.toString());
+    
+    // Trigger celebration animation and sound
+    triggerCelebration();
   };
 
   const exportToCSV = () => {
